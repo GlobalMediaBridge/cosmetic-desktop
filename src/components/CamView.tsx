@@ -1,24 +1,25 @@
-import React, { useRef } from "react";
-import Webcam from "react-webcam";
+import React, { useEffect, useRef } from "react";
 
 interface Props {}
-const videoConstraints = {
-  width: 1280,
-  height: 720,
-  facingMode: "user"
-};
+
 const CamView = (props: Props) => {
-  const webcamRef = useRef(null);
+  const videoElement = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (videoElement === null || videoElement.current === null) return;
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: false })
+      .then(function(stream) {
+        videoElement.current!.srcObject = stream;
+        videoElement.current!.play();
+      })
+      .catch(function(err) {
+        console.error("An error occurred! " + err);
+      });
+  }, [videoElement]);
   return (
     <div>
-      <Webcam
-        audio={false}
-        height={720}
-        ref={webcamRef}
-        screenshotFormat="image/jpeg"
-        width={1280}
-        videoConstraints={videoConstraints}
-      />
+      <video ref={videoElement} />
+      <canvas />
     </div>
   );
 };
