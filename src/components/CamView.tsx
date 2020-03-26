@@ -5,7 +5,10 @@ interface Props {}
 const CamView = (props: Props) => {
   const videoElement = useRef<HTMLVideoElement>(null);
   const canvasElement = useRef<HTMLCanvasElement>(null);
+  const outCanvasElement = useRef<HTMLCanvasElement>(null);
+
   const [requestId, setRequestId] = useState<number>(0);
+
   const processVideo = useCallback(
     (ctx: CanvasRenderingContext2D) => {
       let begin = performance.now();
@@ -23,6 +26,7 @@ const CamView = (props: Props) => {
     },
     [videoElement]
   );
+  
   useEffect(() => {
     if (videoElement === null || videoElement.current === null) return;
     if (canvasElement === null || canvasElement.current === null) return;
@@ -38,12 +42,15 @@ const CamView = (props: Props) => {
       .catch(function(err) {
         console.error("An error occurred! " + err);
       });
+
+    return cancelAnimationFrame(requestId)
   }, [videoElement, canvasElement, processVideo]);
 
   return (
     <div>
       <video ref={videoElement} />
       <canvas ref={canvasElement} width={640} height={480} />
+      <canvas ref={outCanvasElement} width={640} height={480} />
     </div>
   );
 };
